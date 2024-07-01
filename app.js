@@ -9,7 +9,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/api/hello', (req, res) => {
   const visitor_name = req.query.visitor_name;
-  const ip = req.ip;
+  const ip = req.ip.split(':').pop();
   let obj, city;
   try {
     city = geoip.lookup(ip).city;
