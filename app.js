@@ -1,27 +1,50 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const geoip = require('geoip-lite');
+import express from 'express';
+import bodyParser from 'body-parser';
+import axios from 'axios';
+import dotenv from 'dotenv';
 
 const app = express();
-
+dotenv.config();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/api/hello', (req, res) => {
-  const visitor_name = req.query.visitor_name;
-  const ip = req.ip.split(':').pop();
-  let obj, city;
+app.get('/api/hello', async (req, res) => {
+  const visitor_name = req.query.visitor_name || 'Unknown';
+  const apiKey = process.env.apiKey;
+  const ipBaseURL = 'http://api.weatherapi.com/v1/ip.json';
+  const weatherBaseURL = 'http://api.weatherapi.com/v1/current.json';
   try {
-    city = geoip.lookup(ip).city;
-    obj = {
+    // Get the IP address and location data
+    const response = await axios.get(ipBaseURL, {
+      params: {
+        key: apiKey,
+        q: 'auto:ip',
+      }
+    });
+
+    const data = response.data;
+    const city = data.city;
+    const ip = data.ip;
+
+    // Get the weather data
+    const weatherResponse = await axios.get(weatherBaseURL, {
+      params: {
+        key: apiKey,
+        q: `${data.lat},${data.lon}`,
+        current_fields: "temp_c" 
+      }
+    });
+    // Temperature in Celsius
+    const temperature = weatherResponse.data.current.temp_c;
+    const obj = {
       "client_ip": ip,
       "location": city,
-      "greeting": `Hello, ${visitor_name}!, the temperature is 11 degrees Celcius in ${city}`
-      }
+      "greeting": `Hello, ${visitor_name}! The temperature is ${temperature} degrees Celsius in ${city}.`
+    };
+    res.json(obj);
   } catch (error) {
-    res.status(500).send('Ip address not found!');
+    console.error('Error fetching data:', error.message);
   }
-  res.status(200).json(obj);
 });
 
 app.listen(3000, () => {
