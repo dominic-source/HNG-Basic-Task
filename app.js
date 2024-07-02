@@ -13,12 +13,16 @@ app.get('/api/hello', async (req, res) => {
   const apiKey = process.env.apiKey;
   const ipBaseURL = 'http://api.weatherapi.com/v1/ip.json';
   const weatherBaseURL = 'http://api.weatherapi.com/v1/current.json';
+
+   // Get the client's IP address
+   const clientIp = req.ip.split(':').pop();
+
   try {
     // Get the IP address and location data
     const response = await axios.get(ipBaseURL, {
       params: {
         key: apiKey,
-        q: 'auto:ip',
+        q: clientIp,
       }
     });
 
