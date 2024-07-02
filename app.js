@@ -15,8 +15,7 @@ app.get('/api/hello', async (req, res) => {
   const weatherBaseURL = 'http://api.weatherapi.com/v1/current.json';
 
    // Get the client's IP address
-   const clientIp = req.ip.split(':').pop();
-
+  const clientIp = req.headers['x-forwarded-for'] || req.ip;
   try {
     // Get the IP address and location data
     const response = await axios.get(ipBaseURL, {
@@ -27,15 +26,16 @@ app.get('/api/hello', async (req, res) => {
     });
 
     const data = response.data;
-    const city = data.name;
-    console.log(data);
+    const city = data.city;
+    const lat = data.lat;
+    const lon = data.lon;
     // const ip = data.ip;
 
     // Get the weather data
     const weatherResponse = await axios.get(weatherBaseURL, {
       params: {
         key: apiKey,
-        q: `${data.lat},${data.lon}`,
+        q: `${lat},${lon}`,
         current_fields: "temp_c" 
       }
     });
