@@ -28,7 +28,7 @@ app.get('/api/hello', async (req, res) => {
 
     const data = response.data;
     const city = data.name;
-    const ip = data.ip;
+    // const ip = data.ip;
 
     // Get the weather data
     const weatherResponse = await axios.get(weatherBaseURL, {
@@ -41,7 +41,7 @@ app.get('/api/hello', async (req, res) => {
     // Temperature in Celsius
     const temperature = weatherResponse.data.current.temp_c;
     const obj = {
-      "client_ip": ip,
+      "client_ip": clientIp,
       "location": city,
       "greeting": `Hello, ${visitor_name}! The temperature is ${temperature} degrees Celsius in ${city}.`
     };
