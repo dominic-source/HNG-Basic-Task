@@ -15,7 +15,7 @@ app.get('/api/hello', async (req, res) => {
   const weatherBaseURL = 'http://api.weatherapi.com/v1/current.json';
 
    // Get the client's IP address
-   const clientIp = req.ip;
+   const clientIp = req.ip.split(':').pop();
 
   try {
     // Get the IP address and location data
