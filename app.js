@@ -28,6 +28,7 @@ app.get('/api/hello', async (req, res) => {
 
     const data = response.data;
     const city = data.name;
+    console.log(data);
     // const ip = data.ip;
 
     // Get the weather data
